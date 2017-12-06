@@ -43,54 +43,108 @@ calcMoveDistance(1024) == 31
 calcMoveDistance(347991) == 480
 
 //PART 2
+enum Direction {
+    case left, up, down, right
+    
+    func turnDirection() -> Direction {
+        switch self {
+        case .left:
+            return .down
+        case .up:
+            return .left
+        case .down:
+            return .right
+        case .right:
+            return .up
+        }
+    }
+}
+
 class Node {
     var value: Int
-    var right: Node?
-    var up: Node?
-    var left: Node?
-    var down: Node?
-    
+    var topLeft, top, topRight, left, right, bottomLeft, bottom, bottomRight: Node?
+
     init(_ value: Int = 0) {
         self.value = value
     }
     
     func calculateValue() {
         value = 0
-        
-        if let left = left {
-            value += left.value
+
+        value += topLeft?.value ?? 0
+        value += top?.value ?? 0
+        value += topRight?.value ?? 0
+        value += left?.value ?? 0
+        value += right?.value ?? 0
+        value += bottomLeft?.value ?? 0
+        value += bottom?.value ?? 0
+        value += bottomRight?.value ?? 0
+    }
+    
+    func getNeighbor(_ direction: Direction) -> Node? {
+        switch direction {
+        case .left:
+            return left
+        case .up:
+            return top
+        case .down:
+            return bottom
+        case .right:
+            return right
         }
-        //value += top?.value
-        //value += right?.value
-        //value += down?.value
+    }
+    
+    func setNeighbor(_ direction: Direction, _ node: Node) {
+        switch direction {
+        case .left:
+            left = node
+            node.right = self
+            node.top = topLeft
+            node.bottom = bottomLeft
+            node.topRight = top
+            node.bottomRight = bottom
+        case .up:
+            top = node
+            node.bottom = self
+            node.left = topLeft
+            node.right = topRight
+            node.bottomLeft = left
+            node.bottomRight = right
+        case .down:
+            bottom = node
+            node.top = self
+            node.left = bottomLeft
+            node.right = bottomRight
+            node.topLeft = left
+            node.topRight = right
+        case .right:
+            right = node
+            node.left = self
+            node.top = topRight
+            node.bottom = bottomRight
+            node.topLeft = top
+            node.bottomLeft = bottom
+        }
     }
 }
 
 func nextValueBeyond(_ value: Int) -> Int {
     var currentNode: Node = Node(1)
-    var allocatorCounter: Int = 1
-    var ring = 0
-    var ringPosition = 0
+    var currentDirection = Direction.down
     
     while currentNode.value <= value {
-        var ringMaxSteps = (ring * 2)
-        var ringMaxPosition = (ringMaxSteps + 1) * (ringMaxSteps + 1)
-        
-        ringPosition += 1
-        //Shift right into new ring
-        if ringPosition >= ringMaxPosition {
-            ring += 1
-            ringPosition = 0
-            
-            let newNode = Node()
-            currentNode.right = newNode
-            newNode.left = currentNode
-            newNode.calculateValue()
-            currentNode = newNode
-        } else { //Keep spiraling ... out of control
-            
+        var turnDirection = currentDirection.turnDirection()
+        if currentNode.getNeighbor(turnDirection) == nil {
+            print("Turning!")
+            currentDirection = turnDirection
         }
-        break
+        
+        let newNode = Node()
+        currentNode.setNeighbor(currentDirection, newNode)
+        newNode.calculateValue()
+        currentNode = newNode
+        
+        print("Current Node Value: \(currentNode.value) and Direction: \(currentDirection)")
     }
     
     return currentNode.value
