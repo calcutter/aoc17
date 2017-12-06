@@ -41,3 +41,16 @@ calcMoveDistance(49) == 6
 calcMoveDistance(50) == 7
 calcMoveDistance(1024) == 31
 calcMoveDistance(347991) == 480
+
+func nextValueBeyond(_ value: Int) -> Int {
+    return 0
+}
+
+nextValueBeyond(2) == 4
+nextValueBeyond(10) == 11
+nextValueBeyond(11) == 23
+nextValueBeyond(15) == 23
+nextValueBeyond(26) == 54
+nextValueBeyond(53) == 54
+nextValueBeyond(500) == 747
+nextValueBeyond(347991)
