@@ -42,8 +42,58 @@ calcMoveDistance(50) == 7
 calcMoveDistance(1024) == 31
 calcMoveDistance(347991) == 480
 
+//PART 2
+class Node {
+    var value: Int
+    var right: Node?
+    var up: Node?
+    var left: Node?
+    var down: Node?
+    
+    init(_ value: Int = 0) {
+        self.value = value
+    }
+    
+    func calculateValue() {
+        value = 0
+        
+        if let left = left {
+            value += left.value
+        }
+        //value += top?.value
+        //value += right?.value
+        //value += down?.value
+    }
+}
+
 func nextValueBeyond(_ value: Int) -> Int {
-    return 0
+    var currentNode: Node = Node(1)
+    var allocatorCounter: Int = 1
+    var ring = 0
+    var ringPosition = 0
+    
+    while currentNode.value <= value {
+        var ringMaxSteps = (ring * 2)
+        var ringMaxPosition = (ringMaxSteps + 1) * (ringMaxSteps + 1)
+        
+        ringPosition += 1
+        //Shift right into new ring
+        if ringPosition >= ringMaxPosition {
+            ring += 1
+            ringPosition = 0
+            
+            let newNode = Node()
+            currentNode.right = newNode
+            newNode.left = currentNode
+            newNode.calculateValue()
+            currentNode = newNode
+        } else { //Keep spiraling ... out of control
+            
+        }
+        break
+    }
+    
+    return currentNode.value
 }
 
 nextValueBeyond(2) == 4
