@@ -4,25 +4,24 @@ import Foundation
 
 func calcMoveDistance(_ value: Int) -> Int {
     let root = sqrt(Double(value))
-    let ceiling = Int(ceil(root))
-    let ring = ceiling / 2 //also minSteps
-    let maxStepsForRing = ring * 2
+    let rootRoundedUp = Int(ceil(root))
+    let ring = rootRoundedUp / 2 //NOTE: A value's ring is also the minimum possible number of steps
+    let maxSteps = ring * 2
     
-    let minValueForRing = (ring * 2 - 1) * (ring * 2 - 1) + 1
-    
-    let squareLength = ring * 2 + 1
+    let minValueSteps = maxSteps - 1
+    let minValueForRing = minValueSteps * minValueSteps + 1
     
     let offsetWithinRing = value - minValueForRing
     
+    //hmmmmmmmmmm
     if ring == 0 {
         return 0
     }
     
-    let ringPosition = offsetWithinRing % maxStepsForRing
+    let linearPosition = offsetWithinRing % maxSteps
+    let linearMidpoint = minValueSteps / 2
     
-    let pivot = (maxStepsForRing - 1) / 2
-    
-    return ring + abs(pivot - ringPosition)
+    return ring + abs(linearMidpoint - linearPosition)
 }
 
 calcMoveDistance(1) == 0
