@@ -131,6 +131,7 @@ class Node {
 func nextValueBeyond(_ value: Int) -> Int {
     var currentNode: Node = Node(1)
     var currentDirection = Direction.down
+    var nodeCount = 1
     
     while currentNode.value <= value {
         var turnDirection = currentDirection.turnDirection()
@@ -147,6 +148,11 @@ func nextValueBeyond(_ value: Int) -> Int {
         currentNode = newNode
         
         print("Current Node Value: \(currentNode.value) and Direction: \(currentDirection)")
+        
+        nodeCount += 1
+        if nodeCount > 50 {
+            break
+        }
     }
     
     return currentNode.value
