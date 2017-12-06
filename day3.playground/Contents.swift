@@ -135,8 +135,10 @@ func nextValueBeyond(_ value: Int) -> Int {
     while currentNode.value <= value {
         var turnDirection = currentDirection.turnDirection()
         if currentNode.getNeighbor(turnDirection) == nil {
-            print("Turning!")
+            print("Turning from \(currentDirection) to \(turnDirection)")
             currentDirection = turnDirection
+        } else {
+            print("Marching \(currentDirection)")
         }
         
         let newNode = Node()
@@ -150,8 +152,8 @@ func nextValueBeyond(_ value: Int) -> Int {
     return currentNode.value
 }
 
-nextValueBeyond(2) == 4
-nextValueBeyond(10) == 11
+//nextValueBeyond(2) == 4
+//nextValueBeyond(10) == 11
 nextValueBeyond(11) == 23
 nextValueBeyond(15) == 23
 nextValueBeyond(26) == 54
