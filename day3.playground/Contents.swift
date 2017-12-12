@@ -60,106 +60,20 @@ enum Direction {
     }
 }
 
-class Node {
-    var value: Int
-    var topLeft, top, topRight, left, right, bottomLeft, bottom, bottomRight: Node?
-
-    init(_ value: Int = 0) {
-        self.value = value
-    }
-    
-    func calculateValue() {
-        value = 0
-
-        value += topLeft?.value ?? 0
-        value += top?.value ?? 0
-        value += topRight?.value ?? 0
-        value += left?.value ?? 0
-        value += right?.value ?? 0
-        value += bottomLeft?.value ?? 0
-        value += bottom?.value ?? 0
-        value += bottomRight?.value ?? 0
-    }
-    
-    func getNeighbor(_ direction: Direction) -> Node? {
-        switch direction {
-        case .left:
-            return left
-        case .up:
-            return top
-        case .down:
-            return bottom
-        case .right:
-            return right
-        }
-    }
-    
-    func setNeighbor(_ direction: Direction, _ node: Node) {
-        switch direction {
-        case .left:
-            left = node
-            node.right = self
-            node.top = topLeft
-            node.bottom = bottomLeft
-            node.topRight = top
-            node.bottomRight = bottom
-        case .up:
-            top = node
-            node.bottom = self
-            node.left = topLeft
-            node.right = topRight
-            node.bottomLeft = left
-            node.bottomRight = right
-        case .down:
-            bottom = node
-            node.top = self
-            node.left = bottomLeft
-            node.right = bottomRight
-            node.topLeft = left
-            node.topRight = right
-        case .right:
-            right = node
-            node.left = self
-            node.top = topRight
-            node.bottom = bottomRight
-            node.topLeft = top
-            node.bottomLeft = bottom
-        }
-    }
+func calcSquareLength(_ ring: Int) -> Int {
+    return 1 + ring * 2
 }
 
 func nextValueBeyond(_ value: Int) -> Int {
-    var currentNode: Node = Node(1)
     var currentDirection = Direction.down
-    var nodeCount = 1
-    
-    while currentNode.value <= value {
-        var turnDirection = currentDirection.turnDirection()
-        if currentNode.getNeighbor(turnDirection) == nil {
-            print("Turning from \(currentDirection) to \(turnDirection)")
-            currentDirection = turnDirection
-        } else {
-            print("Marching \(currentDirection)")
-        }
-        
-        let newNode = Node()
-        currentNode.setNeighbor(currentDirection, newNode)
-        newNode.calculateValue()
-        currentNode = newNode
-        
-        print("Current Node Value: \(currentNode.value) and Direction: \(currentDirection)")
-        
-        nodeCount += 1
-        if nodeCount > 50 {
-            break
-        }
-    }
-    
-    return currentNode.value
+    var currentRing = 1
+    var squareLength = calcSquareLength(currentRing)
+
+    return 0
 }
 
-//nextValueBeyond(2) == 4
-//nextValueBeyond(10) == 11
+nextValueBeyond(2) == 4
+nextValueBeyond(10) == 11
 nextValueBeyond(11) == 23
 nextValueBeyond(15) == 23
 nextValueBeyond(26) == 54
