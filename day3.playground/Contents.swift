@@ -86,17 +86,58 @@ func calcSquareLength(_ ring: Int) -> Int {
     return 1 + ring * 2
 }
 
+func calcValue(_ grid: [[Int]], _ row: Int, _ col: Int) -> Int {
+    var value = 0
+    var squareLength = grid.count
+    
+    //Left
+    if col > 0 {
+        value += grid[row][col-1]
+        //Top Left
+        if row > 0 {
+            value += grid[row-1][col-1]
+        }
+        //Bottom Left
+        if row < squareLength - 1 {
+            value += grid[row + 1][col - 1]
+        }
+    }
+    //Right
+    if col < squareLength - 1 {
+        value += grid[row][col+1]
+        //Top Right
+        if row > 0 {
+            value += grid[row - 1][col + 1]
+        }
+        //Bottom Right
+        if row < squareLength - 1 {
+            value += grid[row + 1][col + 1]
+        }
+    }
+    //Top
+    if row > 0 {
+        value += grid[row - 1][col]
+    }
+    //Bottom
+    if row < squareLength - 1 {
+        value += grid[row + 1][col]
+    }
+
+    return value
+}
+
 func nextValueBeyond(_ value: Int) -> Int {
     var currentDirection = Direction.down
     var currentRing = 0
     var squareLength = calcSquareLength(currentRing)
     var grid = Array(repeating: Array(repeating: 0, count: squareLength), count: squareLength)
     
-    //Let's get the party started
+    //Initial state
     grid[0][0] = 1
     var lastValue = grid[0][0]
     var col = 0, row = 0
     
+    //Helper
     let addRing: () -> () = {
         let lastSquareLength = squareLength
         currentRing += 1
@@ -110,78 +151,39 @@ func nextValueBeyond(_ value: Int) -> Int {
             }
         }
         grid = newGrid
+        
+        //Shift position down-right
         col += 1
         row += 1
     }
 
-    let calcValue: () -> Int = {
-        var value = 0
-        //Left
-        if col > 0 {
-            value += grid[row][col-1]
-        }
-        //Right
-        if col < squareLength - 1 {
-            value += grid[row][col+1]
-        }
-        //Up
-        if row > 0 {
-            value += grid[row - 1][col]
-        }
-        //Down
-        if row < squareLength - 1 {
-            value += grid[row + 1][col]
-        }
-        
-        //Top Left
-        if col > 0  && row > 0 {
-            value += grid[row-1][col-1]
-        }
-        //Top Right
-        if row > 0 && col < squareLength - 1 {
-            value += grid[row - 1][col + 1]
-        }
-        
-        //Bottom Right
-        if col < squareLength - 1 && row < squareLength - 1 {
-            value += grid[row+1][col+1]
-        }
-        //Bottom Left
-        if row < squareLength - 1  && col > 0{
-            value += grid[row + 1][col - 1]
-        }
-        
-        grid[row][col] = value
-        print("VALUE: \(value)")
-        
-        return value
-    }
-    
+    //The main event
     while(lastValue <= value) {
-        var turnDirection = currentDirection.turnDirection()
-        var turnCol = col + turnDirection.moveCol()
-        var turnRow = row + turnDirection.moveRow()
-        
-        print("turnCol: \(turnCol) turnRow: \(turnRow) squareLength: \(squareLength)")
+        let turnDirection = currentDirection.turnDirection()
+        let turnCol = col + turnDirection.moveCol()
+        let turnRow = row + turnDirection.moveRow()
         
         //turn is successful
         if turnRow < 0 || turnRow >= squareLength || turnCol < 0 || turnCol >= squareLength || grid[turnRow][turnCol] == 0 {
-            print("making a turn like a boss")
             currentDirection = turnDirection
             if currentDirection == .right {
                 addRing()
             }
         }
         
+        //advance
         col = col + currentDirection.moveCol()
         row = row + currentDirection.moveRow()
         
-        lastValue = calcValue()
+        grid[row][col] = calcValue(grid, row, col)
+        lastValue = grid[row][col]
     }
 
     return lastValue
 }
 
+nextValueBeyond(0) == 1
+nextValueBeyond(1) == 2
 nextValueBeyond(2) == 4
 nextValueBeyond(10) == 11
 nextValueBeyond(11) == 23
