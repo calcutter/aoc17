@@ -58,6 +58,28 @@ enum Direction {
             return .up
         }
     }
+    
+    func moveCol() -> Int {
+        switch self {
+        case .left:
+            return -1
+        case .right:
+            return 1
+        default:
+            return 0
+        }
+    }
+    
+    func moveRow() -> Int {
+        switch self {
+        case .up:
+            return -1
+        case .down:
+            return 1
+        default:
+            return 0
+        }
+    }
 }
 
 func calcSquareLength(_ ring: Int) -> Int {
@@ -66,10 +88,98 @@ func calcSquareLength(_ ring: Int) -> Int {
 
 func nextValueBeyond(_ value: Int) -> Int {
     var currentDirection = Direction.down
-    var currentRing = 1
+    var currentRing = 0
     var squareLength = calcSquareLength(currentRing)
+    var grid = Array(repeating: Array(repeating: 0, count: squareLength), count: squareLength)
+    
+    //Let's get the party started
+    grid[0][0] = 1
+    var lastValue = grid[0][0]
+    var col = 0, row = 0
+    
+    let addRing: () -> () = {
+        let lastSquareLength = squareLength
+        currentRing += 1
+        squareLength = calcSquareLength(currentRing)
 
-    return 0
+        var newGrid: [[Int]] = Array(repeating: Array(repeating: 0, count: squareLength), count: squareLength)
+        //Copy over
+        for row in 0..<lastSquareLength {
+            for col in 0..<lastSquareLength {
+                newGrid[row+1][col+1] = grid[row][col]
+            }
+        }
+        grid = newGrid
+        col += 1
+        row += 1
+    }
+
+    let calcValue: () -> Int = {
+        var value = 0
+        //Left
+        if col > 0 {
+            value += grid[row][col-1]
+        }
+        //Right
+        if col < squareLength - 1 {
+            value += grid[row][col+1]
+        }
+        //Up
+        if row > 0 {
+            value += grid[row - 1][col]
+        }
+        //Down
+        if row < squareLength - 1 {
+            value += grid[row + 1][col]
+        }
+        
+        //Top Left
+        if col > 0  && row > 0 {
+            value += grid[row-1][col-1]
+        }
+        //Top Right
+        if row > 0 && col < squareLength - 1 {
+            value += grid[row - 1][col + 1]
+        }
+        
+        //Bottom Right
+        if col < squareLength - 1 && row < squareLength - 1 {
+            value += grid[row+1][col+1]
+        }
+        //Bottom Left
+        if row < squareLength - 1  && col > 0{
+            value += grid[row + 1][col - 1]
+        }
+        
+        grid[row][col] = value
+        print("VALUE: \(value)")
+        
+        return value
+    }
+    
+    while(lastValue <= value) {
+        var turnDirection = currentDirection.turnDirection()
+        var turnCol = col + turnDirection.moveCol()
+        var turnRow = row + turnDirection.moveRow()
+        
+        print("turnCol: \(turnCol) turnRow: \(turnRow) squareLength: \(squareLength)")
+        
+        //turn is successful
+        if turnRow < 0 || turnRow >= squareLength || turnCol < 0 || turnCol >= squareLength || grid[turnRow][turnCol] == 0 {
+            print("making a turn like a boss")
+            currentDirection = turnDirection
+            if currentDirection == .right {
+                addRing()
+            }
+        }
+        
+        col = col + currentDirection.moveCol()
+        row = row + currentDirection.moveRow()
+        
+        lastValue = calcValue()
+    }
+
+    return lastValue
 }
 
 nextValueBeyond(2) == 4
@@ -79,4 +189,4 @@ nextValueBeyond(15) == 23
 nextValueBeyond(26) == 54
 nextValueBeyond(53) == 54
 nextValueBeyond(500) == 747
-nextValueBeyond(347991)
+nextValueBeyond(347991) == 349975
