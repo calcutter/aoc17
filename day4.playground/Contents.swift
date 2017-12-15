@@ -3,7 +3,6 @@
 import Foundation
 
 //Part 1
-
 func countValidPassphrases(_ input: String) -> Int {
     let passPhrases = input.split(separator: "\n")
     var validPassPhrases = passPhrases.count
@@ -541,3 +540,56 @@ jfm bneh tkdzuad bsr oruvmqq uauw zjlp gwov hot jkjbex
 jjo uvk vlpy lpxd irntb uvk ehhsqv fxhvt jjo fpa
 qrwu mgnw hvflf ytspp mco ikvbqg fflvh wts cbbf
 """) == 386
+
+//Part 2
+//Helper
+func isAnagram(_ string1: Substring.SubSequence, _ string2: Substring.SubSequence) -> Bool {
+    if string1.count != string2.count {
+        return false
+    }
+    
+    for char in string1.characters {
+        
+    }
+    
+    return true
+}
+
+func countValidPassphrases2(_ input: String) -> Int {
+    let passPhrases = input.split(separator: "\n")
+    var validPassPhrases = passPhrases.count
+    
+    for passPhrase in passPhrases {
+        var wordSet = Set<Substring.SubSequence>()
+        let words = passPhrase.split(separator: " ")
+        let wordCharMaps = [Dictionary<Character, Int>]()
+        for word in words {
+            var wordCharMap = Dictionary<Character, Int>()
+            for character in word.characters {
+                if let count = wordCharMap[character] {
+                    wordCharMap[character] = count + 1
+                } else {
+                   wordCharMap[character] = 1
+                }
+            }
+        }
+        
+//        for i in 0..<words.count {
+//            for j in i+1..<words.count {
+//                if isAnagram(words[i], words[j]) {
+//                    validPassPhrases -= 1
+//                    break
+//                }
+//            }
+//        }
+    }
+    
+    return validPassPhrases
+}
+
+countValidPassphrases2("abcde fghij") == 1
+countValidPassphrases2("abcde xyz ecdab") == 0
+countValidPassphrases2("a ab abc abd abf abj") == 1
+countValidPassphrases2("iiii oiii ooii oooi oooo") == 1
+countValidPassphrases2("oiii ioii iioi iiio") == 0
+countValidPassphrases2("abcde fghij\nabcde xyz ecdab\na ab abc abd abf abj\niiii oiii ooii oooi oooo\noiii ioii iioi iiio") == 3
